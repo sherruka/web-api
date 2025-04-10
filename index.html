@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/public/favicon.png" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AnimeVerse</title>
+  </head>
+  <body>
+    <div id="cursor"></div>
+    <div id="cursor-blur"></div>
+    
+    <div class="particles-container">
+      <canvas id="particles"></canvas>
+    </div>
+    
+    <header class="main-header">
+      <div class="logo-container">
+        <div class="logo-animation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <h1 class="logo-text">Anime<span>Verse</span></h1>
+      </div>
+      
+      <div class="header-controls">
+        <button id="filterToggle" class="icon-button" aria-label="Показать фильтры">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>Фильтры</span>
+        </button>
+        
+        <button id="themeToggle" class="icon-button" aria-label="Переключить тему">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Поиск аниме..." />
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <button id="searchClear" class="search-clear" aria-label="Очистить поиск">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="filterPanel" class="filter-panel">
+      <div class="filter-header">
+        <h2>Расширенные фильтры</h2>
+        <button id="closeFilters" class="close-button" aria-label="Закрыть фильтры">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="genreSelect">Жанры</label>
+          <div class="multi-select-wrapper">
+            <div id="genreSelect" class="multi-select">
+              <div class="selected-options" id="selectedGenres"></div>
+              <div class="dropdown-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="options-dropdown" id="genreOptions"></div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label for="yearRange">Год выпуска</label>
+          <div class="range-slider-container">
+            <div class="range-values">
+              <span id="yearMin">1960</span>
+              <span id="yearMax">2025</span>
+            </div>
+            <div class="range-slider">
+              <input type="range" id="yearMinInput" min="1960" max="2025" value="1960" class="range-input min-range" />
+              <input type="range" id="yearMaxInput" min="1960" max="2025" value="2025" class="range-input max-range" />
+              <div class="range-track"></div>
+              <div class="range-progress"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label for="typeSelect">Тип</label>
+          <div class="select-wrapper">
+            <select id="typeSelect">
+              <option value="">Все типы</option>
+              <option value="TV">TV Сериал</option>
+              <option value="Movie">Фильм</option>
+              <option value="OVA">OVA</option>
+              <option value="ONA">ONA</option>
+              <option value="Special">Спешл</option>
+              <option value="Music">Клип</option>
+            </select>
+            <div class="select-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label for="statusSelect">Статус</label>
+          <div class="select-wrapper">
+            <select id="statusSelect">
+              <option value="">Все статусы</option>
+              <option value="Airing">Выходит</option>
+              <option value="Complete">Завершён</option>
+              <option value="Upcoming">Анонсирован</option>
+            </select>
+            <div class="select-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label for="ratingRange">Рейтинг</label>
+          <div class="range-slider-container">
+            <div class="range-values">
+              <span id="ratingMin">0</span>
+              <span id="ratingMax">10</span>
+            </div>
+            <div class="range-slider">
+              <input type="range" id="ratingMinInput" min="0" max="10" step="0.1" value="0" class="range-input min-range" />
+              <input type="range" id="ratingMaxInput" min="0" max="10" step="0.1" value="10" class="range-input max-range" />
+              <div class="range-track"></div>
+              <div class="range-progress"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label for="sortSelect">Сортировка</label>
+          <div class="select-wrapper">
+            <select id="sortSelect">
+              <option value="score">По рейтингу</option>
+              <option value="popularity">По популярности</option>
+              <option value="title">По названию</option>
+              <option value="start_date">По дате выхода</option>
+              <option value="end_date">По дате завершения</option>
+              <option value="episodes">По кол-ву эпизодов</option>
+            </select>
+            <div class="select-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label for="sortOrderSelect">Порядок</label>
+          <div class="select-wrapper">
+            <select id="sortOrderSelect">
+              <option value="desc">По убыванию</option>
+              <option value="asc">По возрастанию</option>
+            </select>
+            <div class="select-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filter-actions">
+        <button id="resetFilters" class="button secondary">Сбросить</button>
+        <button id="applyFilters" class="button primary">Применить</button>
+      </div>
+    </div>
+
+    <div class="active-filters" id="activeFilters">
+      <div class="active-filters-scroll">
+        <!-- Active filters will be added here dynamically -->
+      </div>
+    </div>
+
+    <main class="main-content">
+      <div class="view-options">
+        <div class="view-mode">
+          <button id="gridView" class="view-button active" aria-label="Сетка">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
+          <button id="listView" class="view-button" aria-label="Список">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="results-count" id="resultsCount">
+          Найдено: <span>0</span> аниме
+        </div>
+      </div>
+      
+      <div id="animeGrid" class="anime-grid"></div>
+      
+      <div id="loadingContainer" class="loading-container">
+        <div class="loading-animation">
+          <div class="loading-circle"></div>
+          <div class="loading-text">
+            <span>З</span>
+            <span>а</span>
+            <span>г</span>
+            <span>р</span>
+            <span>у</span>
+            <span>з</span>
+            <span>к</span>
+            <span>а</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="noResults" class="no-results hidden">
+        <div class="no-results-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3>Ничего не найдено</h3>
+        <p>Попробуйте изменить параметры поиска</p>
+        <button id="clearFiltersBtn" class="button secondary">Сбросить фильтры</button>
+      </div>
+    </main>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-container">
+        <div class="modal-content">
+          <button id="closeModal" class="close-button" aria-label="Закрыть">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div class="modal-header">
+            <div class="modal-title-container">
+              <h2 id="modalTitle" class="modal-title"></h2>
+              <div id="modalTitleJp" class="modal-title-jp"></div>
+            </div>
+          </div>
+          
+          <div class="modal-body">
+            <div class="modal-sidebar">
+              <div class="modal-image-container">
+                <img id="modalImage" alt="Постер аниме" />
+                <div class="image-overlay"></div>
+              </div>
+              
+              <div class="modal-stats">
+                <div class="stat-item">
+                  <div class="stat-label">Рейтинг</div>
+                  <div id="modalScore" class="stat-value score"></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Тип</div>
+                  <div id="modalType" class="stat-value"></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Статус</div>
+                  <div id="modalStatus" class="stat-value"></div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Эпизоды</div>
+                  <div id="modalEpisodes" class="stat-value"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="modal-main">
+              <div class="tab-container">
+                <div class="tabs">
+                  <button class="tab-button active" data-tab="info">Информация</button>
+                  <button class="tab-button" data-tab="characters">Персонажи</button>
+                  <button class="tab-button" data-tab="staff">Создатели</button>
+                </div>
+                
+                <div class="tab-content">
+                  <div class="tab-pane active" id="info-tab">
+                    <div class="info-section">
+                      <h3>Описание</h3>
+                      <p id="modalSynopsis" class="synopsis"></p>
+                    </div>
+                    
+                    <div class="info-section">
+                      <h3>Жанры</h3>
+                      <div id="modalGenres" class="genres-container"></div>
+                    </div>
+                    
+                    <div class="info-grid">
+                      <div class="info-item">
+                        <div class="info-label">Сезон</div>
+                        <div id="modalSeason" class="info-value"></div>
+                      </div>
+                      <div class="info-item">
+                        <div class="info-label">Год</div>
+                        <div id="modalYear" class="info-value"></div>
+                      </div>
+                      <div class="info-item">
+                        <div class="info-label">Студия</div>
+                        <div id="modalStudios" class="info-value"></div>
+                      </div>
+                      <div class="info-item">
+                        <div class="info-label">Источник</div>
+                        <div id="modalSource" class="info-value"></div>
+                      </div>
+                      <div class="info-item">
+                        <div class="info-label">Рейтинг</div>
+                        <div id="modalRating" class="info-value"></div>
+                      </div>
+                      <div class="info-item">
+                        <div class="info-label">Длительность</div>
+                        <div id="modalDuration" class="info-value"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tab-pane" id="characters-tab">
+                    <div id="modalCharacters" class="characters-grid">
+                      <div class="loading-placeholder">
+                        <div class="loading-circle small"></div>
+                        <p>Загрузка персонажей...</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tab-pane" id="staff-tab">
+                    <div id="modalStaff" class="staff-grid">
+                      <div class="loading-placeholder">
+                        <div class="loading-circle small"></div>
+                        <p>Загрузка информации о создателях...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="modal-actions">
+                <a id="modalExternalLink" href="#" target="_blank" class="button primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  Открыть на MyAnimeList
+                </a>
+                <button id="modalAddToFavorites" class="button secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Добавить в избранное
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toTopButton" class="to-top-button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </div>
+
+    <script type="module" src="/src/main.js" defer></script>
+  </body>
+</html>
